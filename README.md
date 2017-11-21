@@ -10,7 +10,7 @@ An [Arduino](http://arduino.cc/) library for sending and receiving data using [L
 ### Semtech SX1276/77/78/79 wiring
 
 | Pin Name | E19-868MS1W pin# | Arduino DIO# |
-|--------|:-----------:|----------:|
+|--------|:-----------:|:---------:|
 | VCC5V  |    11       | ICSP 5V   |
 | GND    | 1,9,10,18   | ICSP GND  |
 | SCK    |    12       | ICSP SCK  |
@@ -23,15 +23,9 @@ An [Arduino](http://arduino.cc/) library for sending and receiving data using [L
 | DIO0   |     7       |   5       |
 | DIO1   |     6       |   4       | 
 
-DIO1 not used by software
+note DIO1 not used by software
 
-Example 2
 
-| Tables        | Are           | Cool  |
-| ------------- |:-------------:| -----:|
-| col 3 is      | right-aligned | $1600 |
-| col 2 is      | centered      |   $12 |
-| zebra stripes | are neat      |    $1 |
 
 `NSS`, `NRESET`, and `DIO0` pins can be changed by using `LoRa.setPins(ss, reset, dio0)`. `DIO0` pin is optional, it is only needed for receive callback mode. If `DIO0` pin is used, it **must** be interrupt capable via [`attachInterrupt(...)`](https://www.arduino.cc/en/Reference/AttachInterrupt).
 
