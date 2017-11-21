@@ -11,7 +11,7 @@ An [Arduino](http://arduino.cc/) library for sending and receiving data using [L
 
 |  Pin   | E19-868MS1W |   Arduino |
 |  Name  | Pin #       |    DIO#   |
-|--------|-------------|-----------|
+|--------|:-----------:|----------:|
 | VCC5V  |    11       | ICSP 5V   |
 | GND    | 1,9,10,18   | ICSP GND  |
 | SCK    |    12       | ICSP SCK  |
