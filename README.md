@@ -25,6 +25,7 @@ An [Arduino](http://arduino.cc/) library for sending and receiving data using [L
 
 DIO1 not used by software
 
+Example 2
 
 | Tables        | Are           | Cool  |
 | ------------- |:-------------:| -----:|
