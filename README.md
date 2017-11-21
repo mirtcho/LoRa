@@ -1,29 +1,28 @@
 # Arduino LoRa
 
-[![Build Status](https://travis-ci.org/sandeepmistry/arduino-LoRa.svg?branch=master)](https://travis-ci.org/sandeepmistry/arduino-LoRa)
 
 An [Arduino](http://arduino.cc/) library for sending and receiving data using [LoRa](https://www.lora-alliance.org/) radios.
 
 ## Compatible Hardware
 
- * [Semtech SX1276/77/78/79](http://www.semtech.com/apps/product.php?pn=SX1276) based boards including:
-   * [Dragino Lora Shield](http://www.dragino.com/products/module/item/102-lora-shield.html)
-   * [HopeRF](http://www.hoperf.com/rf_transceiver/lora/) [RFM95W](http://www.hoperf.com/rf_transceiver/lora/RFM95W.html), [RFM96W](http://www.hoperf.com/rf_transceiver/lora/RFM96W.html), and [RFM98W](http://www.hoperf.com/rf_transceiver/lora/RFM98W.html)
-   * [Modtronix](http://modtronix.com/) [inAir4](http://modtronix.com/inair4.html), [inAir9](http://modtronix.com/inair9.html), and [inAir9B](http://modtronix.com/inair9b.html)
+ * ebyte E19-868MS1W
 
 ### Semtech SX1276/77/78/79 wiring
 
-| Semtech SX1276/77/78/79 | Arduino |
-| :---------------------: | :------:|
-| VCC | 3.3V |
-| GND | GND |
-| SCK | SCK |
-| MISO | MISO |
-| MOSI | MOSI |
-| NSS | 10 |
-| NRESET | 9 |
-| DIO0 | 2 |
-
+|  Pin   | E19-868MS1W |   Arduino |
+|  Name  | Pin #       |    DIO#   |
+|--------|-------------|-----------|
+| VCC5V  |    11       | ICSP 5V   |
+| GND    | 1,9,10,18   | ICSP GND  |
+| SCK    |    12       | ICSP SCK  |
+| MISO   |    13       | ICSP MISO |
+| MOSI   |    14       | ICSP MOSI |
+| NSS    |    15       |   7       |
+| TX_EN  |    16       |   2       |
+| RX_EN  |    17       |   3       |
+| NRESET |     8       |   6       |
+| DIO0   |     7       |   5       |
+| DIO1   |     6       |   4       | not used by software
 
 `NSS`, `NRESET`, and `DIO0` pins can be changed by using `LoRa.setPins(ss, reset, dio0)`. `DIO0` pin is optional, it is only needed for receive callback mode. If `DIO0` pin is used, it **must** be interrupt capable via [`attachInterrupt(...)`](https://www.arduino.cc/en/Reference/AttachInterrupt).
 
