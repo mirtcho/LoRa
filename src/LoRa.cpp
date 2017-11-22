@@ -31,6 +31,9 @@
 #define REG_SYNC_WORD            0x39
 #define REG_DIO_MAPPING_1        0x40
 #define REG_VERSION              0x42
+//mma
+#define REG_LR_PADAC			 0x4d
+#define REG_OCP                  0x0b
 
 // modes
 #define MODE_LONG_RANGE_MODE     0x80
@@ -51,8 +54,8 @@
 #define MAX_PKT_LENGTH           255
 
 LoRaClass::LoRaClass() :
-  _spiSettings(8E6, MSBFIRST, SPI_MODE0),
-  _ss(LORA_DEFAULT_SS_PIN), _reset(LORA_DEFAULT_RESET_PIN), _dio0(LORA_DEFAULT_DIO0_PIN),
+  _spiSettings(5E5, MSBFIRST, SPI_MODE0),
+  _ss(LORA_DEFAULT_SS_PIN), _reset(LORA_DEFAULT_RESET_PIN), _dio0(LORA_DEFAULT_DIO0_PIN),_tx_en(LORA_DEFAULT_TX_EN_PIN),_rx_en(LORA_DEFAULT_RX_EN_PIN),
   _frequency(0),
   _packetIndex(0),
   _implicitHeaderMode(0),
@@ -67,6 +70,12 @@ int LoRaClass::begin(long frequency)
   // setup pins
   pinMode(_ss, OUTPUT);
   pinMode(_reset, OUTPUT);
+  pinMode (_dio0, INPUT);
+  pinMode (_tx_en, OUTPUT);
+  digitalWrite(_tx_en, LOW);
+  pinMode (_rx_en, OUTPUT);
+  digitalWrite(_rx_en, LOW);
+  
 
   // perform reset
   digitalWrite(_reset, LOW);
@@ -103,8 +112,12 @@ int LoRaClass::begin(long frequency)
   writeRegister(REG_MODEM_CONFIG_3, 0x04);
 
   // set output power to 17 dBm
-  setTxPower(17);
+  setTxPower(17,PA_OUTPUT_PA_BOOST_PIN);
 
+  //mma
+  //SX1276_WriteReg( REG_LR_PADAC, 0x87);  // 0x87 20dbm on 0x84 20dbm off
+  //SX1276_WriteReg( 0x70, 0x10 ); //pll=75khz default 300khz
+  writeRegister(REG_OCP, 0xb); //disable over current protection
   // put in standby mode
   idle();
 
@@ -140,6 +153,8 @@ int LoRaClass::beginPacket(int implicitHeader)
 
 int LoRaClass::endPacket()
 {
+  digitalWrite (_tx_en, HIGH);
+  delay (3);
   // put in TX mode
   writeRegister(REG_OP_MODE, MODE_LONG_RANGE_MODE | MODE_TX);
 
@@ -148,7 +163,7 @@ int LoRaClass::endPacket()
 
   // clear IRQ's
   writeRegister(REG_IRQ_FLAGS, IRQ_TX_DONE_MASK);
-
+  digitalWrite (_tx_en, LOW);
   return 1;
 }
 
@@ -427,11 +442,13 @@ byte LoRaClass::random()
   return readRegister(REG_RSSI_WIDEBAND);
 }
 
-void LoRaClass::setPins(int ss, int reset, int dio0)
+void LoRaClass::setPins(int ss, int reset, int dio0, int tx_en,int rx_en)
 {
   _ss = ss;
   _reset = reset;
   _dio0 = dio0;
+  _tx_en = tx_en;
+  _rx_en = rx_en;
 }
 
 void LoRaClass::setSPIFrequency(uint32_t frequency)
