@@ -42,6 +42,9 @@
 #define MODE_TX                  0x03
 #define MODE_RX_CONTINUOUS       0x05
 #define MODE_RX_SINGLE           0x06
+#define MODE_FREQ_SYTHESIS       0x04
+#define MODE_CHANNEL_ACTIVITY_DETECT      0x07
+
 
 // PA config
 #define PA_BOOST                 0x80
@@ -112,11 +115,11 @@ int LoRaClass::begin(long frequency)
   writeRegister(REG_MODEM_CONFIG_3, 0x04);
 
   // set output power to 17 dBm
-  setTxPower(17,PA_OUTPUT_PA_BOOST_PIN);
-
+  //setTxPower(3,PA_OUTPUT_PA_BOOST_PIN);
+  setTxPower(3);
   //mma
-  //SX1276_WriteReg( REG_LR_PADAC, 0x87);  // 0x87 20dbm on 0x84 20dbm off
-  //SX1276_WriteReg( 0x70, 0x10 ); //pll=75khz default 300khz
+  //writeRegister( REG_LR_PADAC, 0x87);  // 0x87 20dbm on 0x84 20dbm off
+  writeRegister( 0x70, 0x10 ); //pll=75khz default 300khz
   writeRegister(REG_OCP, 0xb); //disable over current protection
   // put in standby mode
   idle();
@@ -131,6 +134,19 @@ void LoRaClass::end()
 
   // stop SPI
   SPI.end();
+}
+
+int LoRaClass::SetRxMode()
+{
+  digitalWrite (_tx_en, LOW);
+  digitalWrite (_rx_en, HIGH);
+  delay (3);
+  // put in RX continue mode
+  writeRegister(REG_OP_MODE, MODE_LONG_RANGE_MODE | MODE_RX_CONTINUOUS);
+  writeRegister (REG_IRQ_FLAGS,0x80);
+  Serial2.print("irq flags=");
+  Serial2.println(readRegister(REG_IRQ_FLAGS));
+  return 1;
 }
 
 int LoRaClass::beginPacket(int implicitHeader)
@@ -153,18 +169,34 @@ int LoRaClass::beginPacket(int implicitHeader)
 
 int LoRaClass::endPacket()
 {
+  int8_t tx_timeout=30;
+  digitalWrite (_rx_en, LOW);
   digitalWrite (_tx_en, HIGH);
   delay (3);
   // put in TX mode
   writeRegister(REG_OP_MODE, MODE_LONG_RANGE_MODE | MODE_TX);
 
   // wait for TX done
-  while((readRegister(REG_IRQ_FLAGS) & IRQ_TX_DONE_MASK) == 0);
+  while( ((readRegister(REG_IRQ_FLAGS) & IRQ_TX_DONE_MASK) == 0)&&(tx_timeout>0))
+  {
+	  delay (60);
+	  tx_timeout--;
+  }
+  delay (100);
+  Serial2.print("irq flags=");
+  Serial2.println(readRegister(REG_IRQ_FLAGS),HEX);
+  Serial2.print("fifo ptr=");
+  Serial2.println(readRegister(REG_FIFO_ADDR_PTR),HEX);
+  Serial2.print("tx_timeout=");
+  Serial2.println(tx_timeout);
 
   // clear IRQ's
   writeRegister(REG_IRQ_FLAGS, IRQ_TX_DONE_MASK);
   digitalWrite (_tx_en, LOW);
-  return 1;
+  delay (1);
+  digitalWrite (_rx_en, HIGH);
+  return tx_timeout;
+
 }
 
 int LoRaClass::parsePacket(int size)
@@ -182,10 +214,14 @@ int LoRaClass::parsePacket(int size)
 
   // clear IRQ's
   writeRegister(REG_IRQ_FLAGS, irqFlags);
-
+  if(irqFlags){
+	  Serial2.print ("irqFlags not zero=");
+	  Serial2.println (irqFlags,HEX);
+  }
   if ((irqFlags & IRQ_RX_DONE_MASK) && (irqFlags & IRQ_PAYLOAD_CRC_ERROR_MASK) == 0) {
     // received a packet
     _packetIndex = 0;
+	Serial2.println ("packet received");
 
     // read packet length
     if (_implicitHeaderMode) {
@@ -320,6 +356,10 @@ void LoRaClass::sleep()
 {
   writeRegister(REG_OP_MODE, MODE_LONG_RANGE_MODE | MODE_SLEEP);
 }
+void LoRaClass::freq_synthesis()
+{
+  writeRegister(REG_OP_MODE, MODE_LONG_RANGE_MODE | MODE_FREQ_SYTHESIS);
+}
 
 void LoRaClass::setTxPower(int level, int outputPin)
 {
@@ -348,7 +388,7 @@ void LoRaClass::setFrequency(long frequency)
 {
   _frequency = frequency;
 
-  uint64_t frf = ((uint64_t)frequency << 19) / 32000000;
+  uint64_t frf = ((uint64_t)frequency << 19) / 32000000; //31761500
 
   writeRegister(REG_FRF_MSB, (uint8_t)(frf >> 16));
   writeRegister(REG_FRF_MID, (uint8_t)(frf >> 8));

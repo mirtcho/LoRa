@@ -24,6 +24,7 @@ public:
   int begin(long frequency);
   void end();
 
+  int SetRxMode();
   int beginPacket(int implicitHeader = false);
   int endPacket();
 
@@ -46,6 +47,7 @@ public:
   void receive(int size = 0);
   void idle();
   void sleep();
+  void freq_synthesis();
 
   void setTxPower(int level, int outputPin = PA_OUTPUT_PA_BOOST_PIN);
   void setFrequency(long frequency);
