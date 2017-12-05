@@ -86,7 +86,7 @@ private:
   uint8_t singleTransfer(uint8_t address, uint8_t value);
 
   static void onDio0Rise();
-
+  void update_lowDR_optimeze(long _bw, int _sf);
 private:
   SPISettings _spiSettings;
   int _ss;
@@ -97,6 +97,8 @@ private:
   int _frequency;
   int _packetIndex;
   int _implicitHeaderMode;
+  long _bw;
+  int _sf;
   void (*_onReceive)(int);
 };
 
