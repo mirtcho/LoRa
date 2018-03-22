@@ -4,8 +4,9 @@ Please note this repository is deprecated, and the code is not up-to-date to use
 
 This repository will not be further maintained. Please find another repository if you want to deploy a single channel gateway.
 
-MMA - Raspberry pi wireint to SX1276/ Ebyte E19 868 
+MMA - Raspberry pi wires to SX1276/ Ebyte E19 868 
 ===================================================
+This module has dedicated pisn for RX and TX control. Active level is high.
 
 int ssPin = 6; 
 int dio0 = 7; 
