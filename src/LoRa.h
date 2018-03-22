@@ -7,9 +7,12 @@
 #include <Arduino.h>
 #include <SPI.h>
 
-#define LORA_DEFAULT_SS_PIN    10
-#define LORA_DEFAULT_RESET_PIN 9
-#define LORA_DEFAULT_DIO0_PIN  2
+#define LORA_DEFAULT_SS_PIN    7
+#define LORA_DEFAULT_RESET_PIN 6
+#define LORA_DEFAULT_DIO0_PIN  5
+
+#define LORA_DEFAULT_TX_EN_PIN 2
+#define LORA_DEFAULT_RX_EN_PIN 3
 
 #define PA_OUTPUT_RFO_PIN      0
 #define PA_OUTPUT_PA_BOOST_PIN 1
@@ -21,6 +24,7 @@ public:
   int begin(long frequency);
   void end();
 
+  int SetRxMode();
   int beginPacket(int implicitHeader = false);
   int endPacket();
 
@@ -43,6 +47,7 @@ public:
   void receive(int size = 0);
   void idle();
   void sleep();
+  void freq_synthesis();
 
   void setTxPower(int level, int outputPin = PA_OUTPUT_PA_BOOST_PIN);
   void setFrequency(long frequency);
@@ -60,7 +65,12 @@ public:
 
   byte random();
 
-  void setPins(int ss = LORA_DEFAULT_SS_PIN, int reset = LORA_DEFAULT_RESET_PIN, int dio0 = LORA_DEFAULT_DIO0_PIN);
+  void setPins(int ss = LORA_DEFAULT_SS_PIN, 
+               int reset = LORA_DEFAULT_RESET_PIN, 
+			   int dio0 = LORA_DEFAULT_DIO0_PIN, 
+			   int tx_en = LORA_DEFAULT_TX_EN_PIN, 
+			   int rx_en =LORA_DEFAULT_RX_EN_PIN);
+			   
   void setSPIFrequency(uint32_t frequency);
 
   void dumpRegisters(Stream& out);
@@ -76,15 +86,19 @@ private:
   uint8_t singleTransfer(uint8_t address, uint8_t value);
 
   static void onDio0Rise();
-
+  void update_lowDR_optimeze(long _bw, int _sf);
 private:
   SPISettings _spiSettings;
   int _ss;
   int _reset;
   int _dio0;
+  int _tx_en;
+  int _rx_en;
   int _frequency;
   int _packetIndex;
   int _implicitHeaderMode;
+  long _bw;
+  int _sf;
   void (*_onReceive)(int);
 };
 
