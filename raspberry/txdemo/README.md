@@ -4,6 +4,15 @@ Please note this repository is deprecated, and the code is not up-to-date to use
 
 This repository will not be further maintained. Please find another repository if you want to deploy a single channel gateway.
 
+MMA - Raspberry pi wireint to SX1276/ Ebyte E19 868 
+===================================================
+
+int ssPin = 6; 
+int dio0 = 7; 
+int RST =0; 
+int TxEnable = 29; 
+int RxEnable = 27; 
+
 
 Single Channel LoRaWAN Gateway
 ==============================
