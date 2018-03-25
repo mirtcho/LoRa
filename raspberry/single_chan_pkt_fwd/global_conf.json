@@ -1,0 +1,36 @@
+{
+  "SX127x_conf":
+  {
+    "freq": 868100000,
+    "spread_factor": 12,
+    "pin_nss": 6,
+    "pin_dio0": 7,
+    "pin_rst": 0,
+    "pin_led1":4
+  },
+  "gateway_conf":
+  {
+    "ref_latitude": 51.6108,
+    "ref_longitude": 5.1439,
+    "ref_altitude": 6,
+
+    "name": "SC Gateway Udenhout",
+    "email": "mirchom@yahoo.com",
+    "desc": "Ebyte E19 868MHz Single Channel Gateway on RPI",
+
+    "servers":
+    [
+      {
+        "address": "router.eu.staging.thethings.network",
+        "port": 1700,
+        "enabled": true
+      },
+      {
+        "address": "router.eu.thethings.network",
+        "port": 1700,
+        "enabled": false
+      }
+    ]
+  }
+}
+
