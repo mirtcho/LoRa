@@ -488,13 +488,15 @@ int EndPacket()
 
 void transmit_packet (int packet_nr)
 {
+  char lora_msg_str[30];
+
+  int n=sprintf (lora_msg_str, "Greetings raspberry pi=%d\n", packet_nr);
   BeginPacket ();
-  LoRa_write((uint8_t *)"Greetings raspberry pi 1234\n  ", 29);
+  LoRa_write((uint8_t *)lora_msg_str, n);
   EndPacket();
 }
 
 int main () {
-
     printf("LoRa TX_DEMO program \n\n");
     wiringPiSetup () ;
     pinMode(ssPin, OUTPUT);
