@@ -3,7 +3,7 @@
 
 An [Arduino](http://arduino.cc/) library for sending and receiving data using [LoRa](https://www.lora-alliance.org/) radios.
 
-## Git brach notes
+## Git branch notes
 
 master branch contain basic functionality that is tested by different users. 
 develop brach - fully integrated and tested by me version. In case of problem please send me an issue report. 
